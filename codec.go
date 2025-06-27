@@ -3,15 +3,22 @@ package codec
 import (
 	"bytes"
 	"compress/flate"
+	"context"
 	"encoding/base64"
 	"io"
+
+	"github.com/gokpm/go-sig"
 )
 
-func Encode(input []byte) string {
+func Encode(ctx context.Context, input []byte) string {
+	log := sig.Start(ctx)
+	defer log.End()
 	return base64.StdEncoding.EncodeToString(input)
 }
 
-func Decode(input string) ([]byte, error) {
+func Decode(ctx context.Context, input string) ([]byte, error) {
+	log := sig.Start(ctx)
+	defer log.End()
 	bytes, err := base64.StdEncoding.DecodeString(input)
 	if err != nil {
 		return nil, err
@@ -19,7 +26,9 @@ func Decode(input string) ([]byte, error) {
 	return bytes, nil
 }
 
-func Compress(input []byte, level int) ([]byte, error) {
+func Compress(ctx context.Context, input []byte, level int) ([]byte, error) {
+	log := sig.Start(ctx)
+	defer log.End()
 	var buf bytes.Buffer
 	writer, err := flate.NewWriter(&buf, level)
 	if err != nil {
@@ -37,7 +46,9 @@ func Compress(input []byte, level int) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func Decompress(input []byte) ([]byte, error) {
+func Decompress(ctx context.Context, input []byte) ([]byte, error) {
+	log := sig.Start(ctx)
+	defer log.End()
 	reader := flate.NewReader(bytes.NewReader(input))
 	defer reader.Close()
 	output, err := io.ReadAll(reader)
