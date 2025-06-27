@@ -21,6 +21,7 @@ func Decode(ctx context.Context, input string) ([]byte, error) {
 	defer log.End()
 	bytes, err := base64.StdEncoding.DecodeString(input)
 	if err != nil {
+		log.Error(err)
 		return nil, err
 	}
 	return bytes, nil
@@ -32,15 +33,18 @@ func Compress(ctx context.Context, input []byte, level int) ([]byte, error) {
 	var buf bytes.Buffer
 	writer, err := flate.NewWriter(&buf, level)
 	if err != nil {
+		log.Error(err)
 		return nil, err
 	}
 	_, err = writer.Write(input)
 	if err != nil {
 		writer.Close()
+		log.Error(err)
 		return nil, err
 	}
 	err = writer.Close()
 	if err != nil {
+		log.Error(err)
 		return nil, err
 	}
 	return buf.Bytes(), nil
@@ -53,6 +57,7 @@ func Decompress(ctx context.Context, input []byte) ([]byte, error) {
 	defer reader.Close()
 	output, err := io.ReadAll(reader)
 	if err != nil {
+		log.Error(err)
 		return nil, err
 	}
 	return output, nil
