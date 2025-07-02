@@ -1,6 +1,6 @@
 # go-codec
 
-A Go package providing base64 encoding/decoding and DEFLATE compression/decompression utilities with structured logging.
+A lightweight Go package for base64 encoding/decoding and DEFLATE compression/decompression.
 
 ## Installation
 
@@ -12,30 +12,36 @@ go get github.com/gokpm/go-codec
 
 ```go
 import (
-    "context"
+    "compress/flate"
     "github.com/gokpm/go-codec"
+    "log"
 )
 
-ctx := context.Background()
-
-// Base64 encoding/decoding
+// Base64 operations
 data := []byte("hello world")
-encoded := codec.Encode(ctx, data)
-decoded, err := codec.Decode(ctx, encoded)
+encoded := codec.Encode(data)
+decoded, err := codec.Decode(encoded)
+if err != nil {
+    log.Fatal(err)
+}
 
-// DEFLATE compression/decompression
-compressed, err := codec.Compress(ctx, data, flate.DefaultCompression)
-decompressed, err := codec.Decompress(ctx, compressed)
+// DEFLATE compression
+compressed, err := codec.Compress(data, flate.DefaultCompression)
+if err != nil {
+    log.Fatal(err)
+}
+decompressed, err := codec.Decompress(compressed)
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 ## Functions
 
-- `Encode(ctx, input)` - Base64 encode bytes to string
-- `Decode(ctx, input)` - Base64 decode string to bytes
-- `Compress(ctx, input, level)` - DEFLATE compress bytes
-- `Decompress(ctx, input)` - DEFLATE decompress bytes
-
-All functions include structured logging via [go-sig](https://github.com/gokpm/go-sig).
+- `Encode(input []byte) string` - Base64 encode bytes to string
+- `Decode(input string) ([]byte, error)` - Base64 decode string to bytes  
+- `Compress(input []byte, level int) ([]byte, error)` - DEFLATE compress bytes
+- `Decompress(input []byte) ([]byte, error)` - DEFLATE decompress bytes
 
 ## License
 
